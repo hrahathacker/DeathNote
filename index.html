@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Death Note</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #050505;
+            color: #d1d1d1;
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background-image: radial-gradient(circle, #1a0000 0%, #050505 80%);
+        }
+
+        h1 {
+            font-family: 'Pirata One', cursive;
+            font-size: 3.5rem;
+            color: #8b0000;
+            text-shadow: 0 0 15px rgba(139, 0, 0, 0.7);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-style: italic;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        #names-container {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(20, 20, 20, 0.9);
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .name-entry {
+            font-family: 'Pirata One', cursive;
+            font-size: 1.8rem;
+            padding: 10px;
+            border-bottom: 1px solid #222;
+            transition: 0.3s;
+            animation: fadeIn 1s ease-in;
+        }
+
+        /* Golden Effect */
+        .gold {
+            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+            font-weight: bold;
+        }
+
+        .normal {
+            color: #bbb;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .loading {
+            color: #8b0000;
+            font-family: 'Pirata One', cursive;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Death Note</h1>
+    <p class="subtitle">The humans whose names are written in this note shall die...</p>
+
+    <div id="names-container">
+        <div class="loading">Fetching souls...</div>
+    </div>
+
+    <script>
+        // APNA GOOGLE APPS SCRIPT URL YAHAN PASTE KAREIN
+        const API_URL = "https://script.google.com/macros/s/AKfycbzbXcekk4NWv8pvLLdGFSfD9vPTGRtA3JZDeEJ0dBDoIrvfg1I97fWZiDTKIQ7zTzKh/exec";
+
+        async function fetchNames() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                const container = document.getElementById('names-container');
+                container.innerHTML = ''; // Loading hatane ke liye
+
+                data.forEach(item => {
+                    const div = document.createElement('div');
+                    div.classList.add('name-entry');
+                    
+                    // Logic: Agar status 'gold' hai toh gold class lagao
+                    if(item.status.toLowerCase() === 'gold') {
+                        div.classList.add('gold');
+                    } else {
+                        div.classList.add('normal');
+                    }
+                    
+                    div.innerText = item.username;
+                    container.appendChild(div);
+                });
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                document.getElementById('names-container').innerText = "Failed to load souls.";
+            }
+        }
+
+        fetchNames();
+    </script>
+</body>
+</html>
