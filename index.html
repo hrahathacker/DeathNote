@@ -79,9 +79,11 @@
         }
 
         .error-msg {
-            font-size: 0.9rem;
-            color: #555;
-            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #ff4444;
+            margin-top: 15px;
+            text-align: center;
+            line-height: 1.4;
         }
     </style>
 </head>
@@ -95,26 +97,26 @@
     </div>
 
     <script>
-        // Your current Google Apps Script URL
+        // Vivek's Google Apps Script URL
         const API_URL = "https://script.google.com/macros/s/AKfycbzbXcekk4NWv8pvLLdGFSfD9vPTGRtA3JZDeEJ0dBDoIrvfg1I97fWZiDTKIQ7zTzKh/exec";
 
         async function fetchNames() {
             const container = document.getElementById('names-container');
             try {
-                // FIXED: Robust fetch with redirect and mode handling
+                // cache: 'no-store' add kiya hai taaki hamesha fresh data aaye
                 const response = await fetch(API_URL, { 
                     method: 'GET',
-                    mode: 'cors',
-                    redirect: 'follow' 
+                    redirect: 'follow',
+                    cache: 'no-store'
                 });
 
-                if (!response.ok) throw new Error('Network Response Failed');
+                if (!response.ok) throw new Error('API Response Error');
 
                 const data = await response.json();
-                container.innerHTML = ''; // Clearing loader
+                container.innerHTML = ''; 
 
-                if (data.length === 0) {
-                    container.innerHTML = "<div class='loading'>The Note is empty. For now.</div>";
+                if (!data || data.length === 0) {
+                    container.innerHTML = "<div class='loading'>The Note is currently empty.</div>";
                     return;
                 }
 
@@ -122,8 +124,8 @@
                     const div = document.createElement('div');
                     div.classList.add('name-entry');
                     
-                    // Logic: Apply Gold or Normal style
-                    if(item.status && item.status.toLowerCase() === 'gold') {
+                    // Logic: Apply Gold or Normal style based on status
+                    if(item.status && item.status.toString().toLowerCase() === 'gold') {
                         div.classList.add('gold');
                     } else {
                         div.classList.add('normal');
@@ -135,13 +137,17 @@
             } catch (error) {
                 console.error("Fetch Error:", error);
                 container.innerHTML = `
-                    <div class='loading' style='color:#8b0000;'>Connection Error.</div>
-                    <div class='error-msg'>Brave Users: Try turning off "Shields" for this site.</div>
+                    <div class='loading' style='color:#ff0000;'>Note connection failed.</div>
+                    <div class='error-msg'>
+                        Brave User Detected? <br>
+                        Please click the 🦁 (Brave Lion) icon and turn <b>Shields OFF</b>. <br>
+                        Brave blocks Google Scripts by default.
+                    </div>
                 `;
             }
         }
 
-        // Initialize fetch
+        // Initialize fetch on load
         fetchNames();
     </script>
 </body>
