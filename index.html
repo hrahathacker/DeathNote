@@ -57,7 +57,7 @@
             background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
             font-weight: bold;
         }
 
@@ -74,6 +74,7 @@
             color: #8b0000;
             font-family: 'Pirata One', cursive;
             font-size: 1.5rem;
+            text-align: center;
         }
     </style>
 </head>
@@ -87,13 +88,15 @@
     </div>
 
     <script>
-        // APNA GOOGLE APPS SCRIPT URL YAHAN PASTE KAREIN
+        // Updated API URL from your latest deployment
         const API_URL = "https://script.google.com/macros/s/AKfycbzbXcekk4NWv8pvLLdGFSfD9vPTGRtA3JZDeEJ0dBDoIrvfg1I97fWZiDTKIQ7zTzKh/exec";
 
         async function fetchNames() {
             try {
-                const response = await fetch(API_URL);
+                // FIXED: Added redirect: 'follow' for Google Apps Script redirects
+                const response = await fetch(API_URL, { redirect: 'follow' });
                 const data = await response.json();
+                
                 const container = document.getElementById('names-container');
                 container.innerHTML = ''; // Loading hatane ke liye
 
@@ -101,8 +104,8 @@
                     const div = document.createElement('div');
                     div.classList.add('name-entry');
                     
-                    // Logic: Agar status 'gold' hai toh gold class lagao
-                    if(item.status.toLowerCase() === 'gold') {
+                    // Logic: Status check for Gold or Normal
+                    if(item.status && item.status.toLowerCase() === 'gold') {
                         div.classList.add('gold');
                     } else {
                         div.classList.add('normal');
@@ -113,10 +116,11 @@
                 });
             } catch (error) {
                 console.error("Error fetching data:", error);
-                document.getElementById('names-container').innerText = "Failed to load souls.";
+                document.getElementById('names-container').innerHTML = "<div class='loading'>Failed to load souls. Check connection.</div>";
             }
         }
 
+        // Run fetch on load
         fetchNames();
     </script>
 </body>
