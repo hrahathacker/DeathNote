@@ -4,12 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digital Death Note</title>
-    <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <style>
+        /* Feather Pen Cursor */
+        * {
+            cursor: url('https://cur.cursors-4u.net/others/oth-2/oth195.cur'), auto !important;
+        }
+
         body {
             background-color: #050505;
             color: #d1d1d1;
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Pirata One', cursive;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -17,138 +22,159 @@
             margin: 0;
             padding: 20px;
             background-image: radial-gradient(circle, #1a0000 0%, #050505 80%);
+            overflow-x: hidden;
+        }
+
+        /* Start Screen Overlay */
+        #overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: 1s;
+        }
+
+        #start-btn {
+            background: none;
+            border: 2px solid #8b0000;
+            color: #8b0000;
+            font-family: 'Pirata One', cursive;
+            font-size: 2.5rem;
+            padding: 10px 30px;
+            cursor: pointer;
+            text-shadow: 0 0 10px red;
+            transition: 0.3s;
+        }
+
+        #start-btn:hover {
+            background: #8b0000;
+            color: white;
+            box-shadow: 0 0 30px #8b0000;
         }
 
         h1 {
-            font-family: 'Pirata One', cursive;
-            font-size: 3.5rem;
+            font-size: 4rem;
             color: #8b0000;
-            text-shadow: 0 0 15px rgba(139, 0, 0, 0.7);
-            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(139, 0, 0, 0.8);
+            margin-top: 50px;
+            animation: flicker 3s infinite;
         }
 
-        .subtitle {
-            font-style: italic;
-            color: #666;
-            margin-bottom: 30px;
-            text-align: center;
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+            20%, 24%, 55% { opacity: 0.4; }
         }
 
         #names-container {
             width: 100%;
             max-width: 600px;
-            background: rgba(20, 20, 20, 0.9);
-            border: 1px solid #333;
-            border-radius: 10px;
             padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
         .name-entry {
-            font-family: 'Pirata One', cursive;
-            font-size: 1.8rem;
-            padding: 10px;
-            border-bottom: 1px solid #222;
-            transition: 0.3s;
-            animation: fadeIn 1s ease-in;
+            font-family: 'Dancing Script', cursive; /* Blood Ink look */
+            font-size: 2.2rem;
+            color: #8b0000; /* Blood Color */
+            white-space: nowrap;
+            overflow: hidden;
+            width: 0;
+            border-right: 2px solid transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
 
-        /* Golden Effect */
+        /* Writing Animation */
+        .writing {
+            animation: typing 3s steps(30, end) forwards;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        /* Gold Blood Effect */
         .gold {
-            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
-            font-weight: bold;
-        }
-
-        .normal {
-            color: #bbb;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            color: #ffd700 !important;
+            text-shadow: 0 0 15px #ffd700, 2px 2px 5px black;
         }
 
         .loading {
-            color: #8b0000;
-            font-family: 'Pirata One', cursive;
             font-size: 1.5rem;
-            text-align: center;
+            color: #444;
         }
 
-        .error-msg {
-            font-size: 0.8rem;
-            color: #ff4444;
-            margin-top: 15px;
-            text-align: center;
-            line-height: 1.4;
+        /* Rain/Static effect for horror feel */
+        .static {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://media.giphy.com/media/oEI9uWUicKgR6S7L3m/giphy.gif');
+            opacity: 0.05;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
 
+    <div class="static"></div>
+
+    <div id="overlay">
+        <button id="start-btn">ENTER THE NOTE</button>
+    </div>
+
     <h1>Death Note</h1>
-    <p class="subtitle">The humans whose names are written in this note shall die...</p>
+    
+    <audio id="horror-bg" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3" type="audio/mpeg">
+    </audio>
 
     <div id="names-container">
-        <div class="loading">Searching for souls...</div>
+        <div class="loading">Fetching Souls...</div>
     </div>
 
     <script>
-        // Vivek's Google Apps Script URL
         const API_URL = "https://script.google.com/macros/s/AKfycbzbXcekk4NWv8pvLLdGFSfD9vPTGRtA3JZDeEJ0dBDoIrvfg1I97fWZiDTKIQ7zTzKh/exec";
+        const audio = document.getElementById('horror-bg');
+        const overlay = document.getElementById('overlay');
+        const startBtn = document.getElementById('start-btn');
+
+        startBtn.addEventListener('click', () => {
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.style.display = 'none', 1000);
+            audio.play();
+            fetchNames();
+        });
 
         async function fetchNames() {
             const container = document.getElementById('names-container');
             try {
-                // cache: 'no-store' add kiya hai taaki hamesha fresh data aaye
-                const response = await fetch(API_URL, { 
-                    method: 'GET',
-                    redirect: 'follow',
-                    cache: 'no-store'
-                });
-
-                if (!response.ok) throw new Error('API Response Error');
-
+                const response = await fetch(API_URL, { redirect: 'follow' });
                 const data = await response.json();
                 container.innerHTML = ''; 
 
-                if (!data || data.length === 0) {
-                    container.innerHTML = "<div class='loading'>The Note is currently empty.</div>";
-                    return;
-                }
-
-                data.forEach(item => {
-                    const div = document.createElement('div');
-                    div.classList.add('name-entry');
-                    
-                    // Logic: Apply Gold or Normal style based on status
-                    if(item.status && item.status.toString().toLowerCase() === 'gold') {
-                        div.classList.add('gold');
-                    } else {
-                        div.classList.add('normal');
-                    }
-                    
-                    div.innerText = item.username;
-                    container.appendChild(div);
+                data.forEach((item, index) => {
+                    setTimeout(() => {
+                        const div = document.createElement('div');
+                        div.classList.add('name-entry');
+                        div.classList.add('writing'); // Writing animation
+                        
+                        if(item.status && item.status.toLowerCase() === 'gold') {
+                            div.classList.add('gold');
+                        }
+                        
+                        div.innerText = item.username;
+                        container.appendChild(div);
+                    }, index * 3500); // 3.5 seconds delay between names
                 });
             } catch (error) {
-                console.error("Fetch Error:", error);
-                container.innerHTML = `
-                    <div class='loading' style='color:#ff0000;'>Note connection failed.</div>
-                    <div class='error-msg'>
-                        Brave User Detected? <br>
-                        Please click the 🦁 (Brave Lion) icon and turn <b>Shields OFF</b>. <br>
-                        Brave blocks Google Scripts by default.
-                    </div>
-                `;
+                container.innerHTML = "<div class='loading'>Failed to summon spirits. Turn off Brave Shields.</div>";
             }
         }
-
-        // Initialize fetch on load
-        fetchNames();
     </script>
 </body>
 </html>
