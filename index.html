@@ -6,7 +6,7 @@
     <title>Digital Death Note</title>
     <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <style>
-        /* Custom Feather Pen Cursor */
+        /* Feather Pen Cursor */
         * {
             cursor: url('https://cur.cursors-4u.net/others/oth-2/oth195.cur'), auto !important;
         }
@@ -45,14 +45,14 @@
             font-family: 'Pirata One', cursive;
             padding: 15px 40px;
             text-shadow: 0 0 10px red;
-            box-shadow: inset 0 0 10px #8b0000;
+            box-shadow: inset 0 0 15px #8b0000;
             cursor: pointer;
         }
 
         #start-btn:hover {
             background: #8b0000;
             color: white;
-            box-shadow: 0 0 30px #ff0000;
+            box-shadow: 0 0 40px #ff0000;
         }
 
         h1 {
@@ -64,9 +64,9 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
         }
 
         #names-container {
@@ -75,27 +75,26 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 25px;
         }
 
         .name-entry {
-            font-family: 'Dancing Script', cursive; /* Blood Ink Font */
-            font-size: 2.5rem;
-            color: #b30000; /* Deep Blood Red */
-            border-bottom: 1px solid #222;
-            padding: 5px 0;
+            font-family: 'Dancing Script', cursive; /* Blood Ink look */
+            font-size: 2.8rem;
+            color: #990000; /* Deep Blood Red */
             white-space: nowrap;
             overflow: hidden;
             width: 0;
-            text-shadow: 2px 2px 4px black;
+            border-bottom: 1px solid #1a0000;
+            text-shadow: 2px 2px 5px black;
         }
 
-        /* Writing Effect */
-        .writing-anim {
-            animation: write 4s steps(40, end) forwards;
+        /* Writing Animation */
+        .writing {
+            animation: typing 4s steps(40, end) forwards;
         }
 
-        @keyframes write {
+        @keyframes typing {
             from { width: 0; }
             to { width: 100%; }
         }
@@ -105,20 +104,19 @@
             text-shadow: 0 0 20px #ffd700, 2px 2px 5px black !important;
         }
 
-        .loading { font-size: 1.2rem; color: #444; }
+        .loading { font-size: 1.2rem; color: #333; }
     </style>
 </head>
 <body>
 
     <div id="overlay">
-        <button id="start-btn">READ THE NOTE</button>
+        <button id="start-btn">ENTER THE NOTE</button>
     </div>
 
     <h1>Death Note</h1>
-    <p style="color: #666; font-style: italic;">How many names can you fit?</p>
 
     <audio id="bg-audio" loop>
-        <source src="http://www.thebluemask.com/public/demos/hideandseek_preview.mp3" type="audio/mpeg">
+        <source src="Death Note - (L's Theme A) Music.mp3" type="audio/mpeg">
     </audio>
 
     <div id="names-container">
@@ -134,7 +132,7 @@
         startBtn.addEventListener('click', () => {
             overlay.style.opacity = '0';
             setTimeout(() => overlay.style.display = 'none', 1500);
-            audio.volume = 0.5;
+            audio.volume = 0.6;
             audio.play();
             fetchNames();
         });
@@ -147,10 +145,9 @@
                 container.innerHTML = ''; 
 
                 data.forEach((item, index) => {
-                    // Ek-ek karke naam likhne ke liye delay
                     setTimeout(() => {
                         const div = document.createElement('div');
-                        div.className = 'name-entry writing-anim';
+                        div.className = 'name-entry writing';
                         
                         if(item.status && item.status.toLowerCase() === 'gold') {
                             div.classList.add('gold');
@@ -158,10 +155,10 @@
                         
                         div.innerText = item.username;
                         container.appendChild(div);
-                    }, index * 4500); // 4.5 sec gap for typing feel
+                    }, index * 4500); // 4.5 seconds gap between each soul
                 });
             } catch (error) {
-                container.innerHTML = "<div class='loading' style='color:red;'>Failed. Check Brave Shields.</div>";
+                container.innerHTML = "<div class='loading' style='color:red;'>Spirit Connection Failed. Check Brave Shields.</div>";
             }
         }
     </script>
