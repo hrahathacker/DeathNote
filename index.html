@@ -6,7 +6,7 @@
     <title>Digital Death Note</title>
     <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <style>
-        /* Feather Pen Cursor */
+        /* Custom Feather Pen Cursor */
         * {
             cursor: url('https://cur.cursors-4u.net/others/oth-2/oth195.cur'), auto !important;
         }
@@ -25,7 +25,7 @@
             overflow-x: hidden;
         }
 
-        /* Start Screen Overlay */
+        /* Overlay for Audio Start */
         #overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -34,38 +34,39 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            transition: 1s;
+            transition: 1.5s;
         }
 
         #start-btn {
             background: none;
             border: 2px solid #8b0000;
             color: #8b0000;
-            font-family: 'Pirata One', cursive;
             font-size: 2.5rem;
-            padding: 10px 30px;
-            cursor: pointer;
+            font-family: 'Pirata One', cursive;
+            padding: 15px 40px;
             text-shadow: 0 0 10px red;
-            transition: 0.3s;
+            box-shadow: inset 0 0 10px #8b0000;
+            cursor: pointer;
         }
 
         #start-btn:hover {
             background: #8b0000;
             color: white;
-            box-shadow: 0 0 30px #8b0000;
+            box-shadow: 0 0 30px #ff0000;
         }
 
         h1 {
-            font-size: 4rem;
+            font-size: 4.5rem;
             color: #8b0000;
-            text-shadow: 0 0 20px rgba(139, 0, 0, 0.8);
+            text-shadow: 0 0 25px rgba(139, 0, 0, 0.9);
             margin-top: 50px;
-            animation: flicker 3s infinite;
+            animation: pulse 2s infinite;
         }
 
-        @keyframes flicker {
-            0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
-            20%, 24%, 55% { opacity: 0.4; }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         #names-container {
@@ -74,63 +75,50 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
 
         .name-entry {
-            font-family: 'Dancing Script', cursive; /* Blood Ink look */
-            font-size: 2.2rem;
-            color: #8b0000; /* Blood Color */
+            font-family: 'Dancing Script', cursive; /* Blood Ink Font */
+            font-size: 2.5rem;
+            color: #b30000; /* Deep Blood Red */
+            border-bottom: 1px solid #222;
+            padding: 5px 0;
             white-space: nowrap;
             overflow: hidden;
             width: 0;
-            border-right: 2px solid transparent;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            text-shadow: 2px 2px 4px black;
         }
 
-        /* Writing Animation */
-        .writing {
-            animation: typing 3s steps(30, end) forwards;
+        /* Writing Effect */
+        .writing-anim {
+            animation: write 4s steps(40, end) forwards;
         }
 
-        @keyframes typing {
+        @keyframes write {
             from { width: 0; }
             to { width: 100%; }
         }
 
-        /* Gold Blood Effect */
         .gold {
             color: #ffd700 !important;
-            text-shadow: 0 0 15px #ffd700, 2px 2px 5px black;
+            text-shadow: 0 0 20px #ffd700, 2px 2px 5px black !important;
         }
 
-        .loading {
-            font-size: 1.5rem;
-            color: #444;
-        }
-
-        /* Rain/Static effect for horror feel */
-        .static {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://media.giphy.com/media/oEI9uWUicKgR6S7L3m/giphy.gif');
-            opacity: 0.05;
-            pointer-events: none;
-        }
+        .loading { font-size: 1.2rem; color: #444; }
     </style>
 </head>
 <body>
 
-    <div class="static"></div>
-
     <div id="overlay">
-        <button id="start-btn">ENTER THE NOTE</button>
+        <button id="start-btn">READ THE NOTE</button>
     </div>
 
     <h1>Death Note</h1>
-    
-    <audio id="horror-bg" loop>
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3" type="audio/mpeg">
+    <p style="color: #666; font-style: italic;">How many names can you fit?</p>
+
+    <audio id="bg-audio" loop>
+        <source src="http://www.thebluemask.com/public/demos/hideandseek_preview.mp3" type="audio/mpeg">
     </audio>
 
     <div id="names-container">
@@ -139,13 +127,14 @@
 
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbzbXcekk4NWv8pvLLdGFSfD9vPTGRtA3JZDeEJ0dBDoIrvfg1I97fWZiDTKIQ7zTzKh/exec";
-        const audio = document.getElementById('horror-bg');
-        const overlay = document.getElementById('overlay');
         const startBtn = document.getElementById('start-btn');
+        const overlay = document.getElementById('overlay');
+        const audio = document.getElementById('bg-audio');
 
         startBtn.addEventListener('click', () => {
             overlay.style.opacity = '0';
-            setTimeout(() => overlay.style.display = 'none', 1000);
+            setTimeout(() => overlay.style.display = 'none', 1500);
+            audio.volume = 0.5;
             audio.play();
             fetchNames();
         });
@@ -158,10 +147,10 @@
                 container.innerHTML = ''; 
 
                 data.forEach((item, index) => {
+                    // Ek-ek karke naam likhne ke liye delay
                     setTimeout(() => {
                         const div = document.createElement('div');
-                        div.classList.add('name-entry');
-                        div.classList.add('writing'); // Writing animation
+                        div.className = 'name-entry writing-anim';
                         
                         if(item.status && item.status.toLowerCase() === 'gold') {
                             div.classList.add('gold');
@@ -169,10 +158,10 @@
                         
                         div.innerText = item.username;
                         container.appendChild(div);
-                    }, index * 3500); // 3.5 seconds delay between names
+                    }, index * 4500); // 4.5 sec gap for typing feel
                 });
             } catch (error) {
-                container.innerHTML = "<div class='loading'>Failed to summon spirits. Turn off Brave Shields.</div>";
+                container.innerHTML = "<div class='loading' style='color:red;'>Failed. Check Brave Shields.</div>";
             }
         }
     </script>
